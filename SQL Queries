@@ -1,0 +1,66 @@
+select * from Covid19_Data_Analysis..covid_deaths order by 3,4
+
+select location,date,total_cases,total_deaths,population 
+from Covid19_Data_Analysis..covid_deaths 
+order by 1,2
+
+-- General Record of Covid19 in India
+
+select location,date,total_cases,total_deaths,population 
+from Covid19_Data_Analysis..covid_deaths 
+where location='India'
+order by 1,2
+
+-- Calculation of death percentage per day vs total cases
+
+select location,date,total_cases,total_deaths,(total_deaths/total_cases)*100 as death_percentage
+from Covid19_Data_Analysis..covid_deaths 
+where location='India'
+order by 1,2
+
+
+-- Calculation of positive cases per day rise  vs total population
+select location,date,total_cases,total_deaths,population,(total_cases/population)*100 as covid_percentage
+from Covid19_Data_Analysis..covid_deaths 
+where location='India'
+order by 1,2
+
+-- Highest percentage of infected population by country
+
+select location,population,Max(total_cases) as total_cases,Max((total_cases/population))*100 as highest_infection_percentage
+from Covid19_Data_Analysis..covid_deaths 
+group by location,population
+order by highest_infection_percentage desc
+
+
+-- Highest count of death count by country
+
+select location,Max(cast(total_deaths as int)) as total_deaths_count
+from Covid19_Data_Analysis..covid_deaths 
+where continent is not null
+group by location
+order by total_deaths_count desc
+
+
+-- Highest count of death count by continent
+
+select location,Max(cast(total_deaths as int)) as total_deaths_count
+from Covid19_Data_Analysis..covid_deaths 
+where continent is null
+group by location
+order by total_deaths_count desc
+
+-- Daily count across the glob
+
+select date,sum(new_cases) as total_cases,sum(cast(new_deaths as int)) as total_deaths
+from Covid19_Data_Analysis..covid_deaths
+where continent is not null
+group by date
+order by 1,2
+
+--Total Covid Case across the glob till 15/08/2021
+
+select sum(new_cases) as total_cases,sum(cast(new_deaths as int)) as total_deaths, 
+(sum(cast(new_deaths as int))/sum(new_cases))*100 as percentage_of_death
+from Covid19_Data_Analysis..covid_deaths
+where continent is not null
